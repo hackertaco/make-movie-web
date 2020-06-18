@@ -2,23 +2,44 @@ import React, { useEffect, useState } from "react";
 import { FaCode } from "react-icons/fa";
 import { API_URL, API_KEY, IMAGE_BASE_URL } from "../../Config";
 import MainImage from "./Sections/MainImage";
+import GridCards from "../commons/GridCards";
+import { Row } from "antd";
 function LandingPage() {
   const [Movies, setMovies] = useState([]);
   const [MainMovie, setMainMovie] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+
   useEffect(() => {
     const endPoint = `${API_URL}movie/popular?api_key=${API_KEY}&language=en-US&page=1`;
+    fetchMovies(endPoint);
     fetch(endPoint)
       .then((response) => response.json())
       .then((response) => {
-        setMovies([response.results]);
         setMainMovie(response.results[0]);
       });
   }, []);
+
+  const loadMoreItems = () => {
+    const endPoint = `${API_URL}movie/popular?api_key=${API_KEY}&language=en-US&page=${
+      currentPage + 1
+    }`;
+    fetchMovies(endPoint);
+  };
+  const fetchMovies = (endPoint) => {
+    fetch(endPoint)
+      .then((response) => response.json())
+      .then((response) => {
+        console.log(response);
+        setMovies([...Movies, ...response.results]);
+
+        setCurrentPage(response.page);
+      });
+  };
   return (
     <div style={{ width: "100%", margin: "0" }}>
       {MainMovie && (
         <MainImage
-          image={`${IMAGE_BASE_URL}w1280/${MainMovie.backdrop_path}`}
+          img={`${IMAGE_BASE_URL}w1280/${MainMovie.backdrop_path}`}
           title={MainMovie.original_title}
           text={MainMovie.overview}
         />
@@ -27,9 +48,26 @@ function LandingPage() {
       <div style={{ width: "85%", margin: "1rem auto" }}>
         <h2>Movies by latest</h2>
         <hr />
+
+        <Row gutter={[16, 16]}>
+          {Movies &&
+            Movies.map((movie, index) => (
+              <React.Fragment key={index}>
+                <GridCards
+                  image={
+                    movie.poster_path
+                      ? `${IMAGE_BASE_URL}w500/${movie.poster_path}`
+                      : null
+                  }
+                  movieId={movie.id}
+                  movieName={movie.original_title}
+                />
+              </React.Fragment>
+            ))}
+        </Row>
       </div>
       <div style={{ display: "flex", justifyContent: "center" }}>
-        <button>Load more</button>
+        <button onClick={loadMoreItems}>Load more</button>
       </div>
     </div>
   );
