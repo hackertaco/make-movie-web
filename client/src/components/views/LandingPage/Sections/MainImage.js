@@ -1,5 +1,5 @@
 import React from "react";
-export default function MainImage(props) {
+export default function MainImage({ img, title, text }) {
   return (
     <div
       style={{
@@ -7,7 +7,7 @@ export default function MainImage(props) {
     39%, rgba(0,0,0,0)
     41%, rgba(0,0,0,0.65)
     100%),
-    url('${props.img}'), #1c1c1c`,
+    url('${img}'), #1c1c1c`,
         height: "500px",
         backgroundSize: "100%, cover",
         backgroundPosition: "center,center",
@@ -24,8 +24,8 @@ export default function MainImage(props) {
             marginLeft: "2rem",
           }}
         >
-          <h2 style={{ color: "white" }}>{props.title}</h2>
-          <p style={{ color: "white", fontSize: "1rem" }}>{props.text}</p>
+          <h2 style={{ color: "white" }}>{title}</h2>
+          <p style={{ color: "white", fontSize: "1rem" }}>{text}</p>
         </div>
       </div>
     </div>
