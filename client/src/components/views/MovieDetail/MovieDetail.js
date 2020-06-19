@@ -2,20 +2,31 @@ import React, { useEffect, useState } from "react";
 import { API_URL, API_KEY, IMAGE_BASE_URL } from "../../Config";
 import MainImage from "../LandingPage/Sections/MainImage";
 import MovieInfo from "./Sections/MovieInfo";
-
+import GridCards from "../commons/GridCards";
+import { Row } from "antd";
 function MovieDetail(props) {
   let movieId = props.match.params.movieId;
 
   const [MovieInfos, setMovieInfos] = useState([]);
-
+  const [MovieCasts, setMovieCasts] = useState([]);
+  const [castToggle, setCastToggle] = useState(false);
+  const toggleCast = () => {
+    setCastToggle(!castToggle);
+  };
   useEffect(() => {
-    let endpointCrew = `${API_URL}movie/${movieId}/credits?api_key=${API_KEY}`;
+    let endpointCasts = `${API_URL}movie/${movieId}/credits?api_key=${API_KEY}`;
     let endpointInfo = `${API_URL}movie/${movieId}?api_key=${API_KEY}`;
     fetch(endpointInfo)
       .then((response) => response.json())
       .then((response) => {
         console.log(response);
         setMovieInfos(response);
+      });
+    fetch(endpointCasts)
+      .then((response) => response.json())
+      .then((response) => {
+        setMovieCasts(response.cast);
+        console.log(response);
       });
   }, []);
   return (
@@ -31,8 +42,25 @@ function MovieDetail(props) {
         <div
           style={{ display: "flex", justifyContent: "center", margin: "2rem" }}
         >
-          <button>Toggle Actor View</button>
+          <button onClick={toggleCast}>Toggle Actor View</button>
         </div>
+        {castToggle && (
+          <Row gutter={[16, 16]} CastToggle>
+            {MovieCasts &&
+              MovieCasts.map((cast, index) => (
+                <React.Fragment key={index}>
+                  <GridCards
+                    image={
+                      cast.profile_path
+                        ? `${IMAGE_BASE_URL}w500/${cast.profile_path}`
+                        : `${cast.character}`
+                    }
+                    characterName={cast.character}
+                  />
+                </React.Fragment>
+              ))}
+          </Row>
+        )}
       </div>
     </div>
   );
