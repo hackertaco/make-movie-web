@@ -31,7 +31,6 @@ function LandingPage() {
       .then((response) => {
         console.log(response);
         setMovies([...Movies, ...response.results]);
-
         setCurrentPage(response.page);
       });
   };
